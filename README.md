@@ -15,7 +15,7 @@ A complete system for controlling a robot car via Bluetooth, consisting of an An
 ```
 YPBot/
 ├── YPBot-app/              # Android application
-└── YPBot-miniAuto/        # Arduino firmware
+└── YPBot-miniAuto/         # Arduino firmware
 ```
 
 See [AGENTS.md](AGENTS.md) for detailed architecture information.
