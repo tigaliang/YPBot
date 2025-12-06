@@ -72,6 +72,7 @@ import me.ypphy.ypbot.ui.theme.PrimaryBlue
 import me.ypphy.ypbot.ui.theme.TextPrimary
 import me.ypphy.ypbot.ui.theme.TextSecondary
 import me.ypphy.ypbot.ui.viewmodel.CarControlViewModel
+import me.ypphy.ypbot.ui.components.VelocityTimeChartCard
 
 @SuppressLint("MissingPermission")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -82,6 +83,7 @@ fun CarControlScreen(
     val discoveredDevices by viewModel.discoveredDevices.collectAsState()
     val isScanning by viewModel.isScanning.collectAsState()
     val carStatus by viewModel.carStatus.collectAsState()
+    val velocityHistory by viewModel.velocityHistory.collectAsState()
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -144,6 +146,11 @@ fun CarControlScreen(
                             viewModel.startCar()
                         }
                     }
+                )
+
+                // Velocity-Time Chart Card (only shown when car is running)
+                VelocityTimeChartCard(
+                    velocityHistory = velocityHistory
                 )
 
                 // LED Color Control Card
