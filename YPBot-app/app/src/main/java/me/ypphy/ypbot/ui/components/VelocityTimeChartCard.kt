@@ -58,9 +58,9 @@ fun VelocityTimeChartCard(
             val timeRange = maxOf(maxTime, 35000L) // 至少显示35秒
             val minTime = maxOf(0L, maxTime - timeRange)
             
-            // 速度范围固定为 0-100
+            // 速度范围固定为 0-120
             val velocityMin = 0
-            val velocityMax = 100
+            val velocityMax = 120
             
             // 图表尺寸
             val chartHeight = 200.dp
@@ -90,7 +90,7 @@ fun VelocityTimeChartCard(
                     color = TextSecondary
                 )
                 Text(
-                    text = "纵轴 (v): 0-100",
+                    text = "纵轴 (v): 0-120",
                     fontSize = 12.sp,
                     color = TextSecondary
                 )
