@@ -1,5 +1,6 @@
 package me.ypphy.ypbot.ui.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import me.ypphy.ypbot.BluetoothManager
@@ -60,21 +62,21 @@ class CarControlViewModel(
 
     // 速度-时间数据记录
     data class VelocityDataPoint(val time: Long, val velocity: Int)
-    private val _velocityHistory = MutableStateFlow<List<VelocityDataPoint>>(listOf(VelocityDataPoint(0, 100), VelocityDataPoint(1000, 100), VelocityDataPoint(2000, 100), VelocityDataPoint(3000, 100), VelocityDataPoint(4000, 100), VelocityDataPoint(5000, 100), VelocityDataPoint(6000, 100), VelocityDataPoint(7000, 100), VelocityDataPoint(8000, 100), VelocityDataPoint(9000, 100), VelocityDataPoint(10000, 100)))
+    private val _velocityHistory = MutableStateFlow<List<VelocityDataPoint>>(emptyList())
     val velocityHistory = _velocityHistory.asStateFlow()
     
     private var startTime: Long? = null
 
     init {
-        // 持续监听速度变化，当 isRunning 为 true 时记录数据
+        // 使用定时器定期采样速度数据，即使速度不变也会更新
         viewModelScope.launch {
-            carStatus.collect { status ->
-                // 每次都检查当前的 isRunning 状态
-                val running = isRunning
-                if (running && startTime != null) {
+            while (true) {
+                delay(200) // 每200毫秒采样一次
+                if (isRunning && startTime != null) {
                     val currentTime = System.currentTimeMillis()
                     val elapsedTime = currentTime - startTime!!
-                    val newDataPoint = VelocityDataPoint(elapsedTime, status.velocity)
+                    val currentVelocity = carStatus.value.velocity
+                    val newDataPoint = VelocityDataPoint(elapsedTime, currentVelocity)
                     _velocityHistory.value = (_velocityHistory.value + newDataPoint).takeLast(1000) // 保留最近1000个数据点
                 }
             }
