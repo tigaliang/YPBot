@@ -31,9 +31,12 @@
  const static uint32_t send_interval_ms = 100;   /* 数据发送间隔100ms */
  const static uint32_t send_interval_ms_idle = 3000;   /* 数据发送间隔3000ms */
  
- /* 电压监测相关参数 */
- static float voltage;                      /* 电压值（伏特） */
- static int voltage_send;                   /* 电压值（毫伏） */
+/* 电压监测相关参数 */
+static float voltage;                      /* 电压值（伏特） */
+static int voltage_send;                   /* 电压值（毫伏） */
+
+/* 超声波测距相关参数 */
+static uint16_t distance = 0;              /* 超声波距离（毫米） */
  
  String rec_data[4];                       /* 接收串口数据 */
  char *charArray;
@@ -194,36 +197,41 @@
    }
  }
  
- /**
-  * @brief 发送速度和电压数据
-  * 格式: $<velocity>,<voltage>$
-  * 每100ms发送一次
-  */
- void Send_Data(bool force_send)
- {
-   uint32_t currentTime_ms = millis();
-   
-   if(currentTime_ms - previousSendTime_ms >= (is_accelerating ? send_interval_ms : send_interval_ms_idle) || force_send)
-   {
-     /* 不运动时才重新计算电压值 */
-     if (!is_accelerating) {
-       voltage = analogRead(A3) * 0.02989;           /* 电压计算（伏特） */
-       voltage_send = (int)(voltage * 1000);         /* 转换为毫伏 */
-     }
-     
-     /* 获取当前速度（整数） */
-     int velocity_int = (int)current_velocity;
-     
-     /* 发送数据: $<velocity>,<voltage>$ */
-     Serial.print("$");
-     Serial.print(velocity_int);
-     Serial.print(",");
-     Serial.print(voltage_send);
-     Serial.print("$");
-     
-     previousSendTime_ms = currentTime_ms;
-   }
- }
+/**
+ * @brief 发送速度、电压和距离数据
+ * 格式: $<velocity>,<voltage>,<distance>$
+ * 每100ms发送一次
+ */
+void Send_Data(bool force_send)
+{
+  uint32_t currentTime_ms = millis();
+  
+  if(currentTime_ms - previousSendTime_ms >= (is_accelerating ? send_interval_ms : send_interval_ms_idle) || force_send)
+  {
+    /* 不运动时才重新计算电压值 */
+    if (!is_accelerating) {
+      voltage = analogRead(A3) * 0.02989;           /* 电压计算（伏特） */
+      voltage_send = (int)(voltage * 1000);         /* 转换为毫伏 */
+    }
+    
+    /* 获取超声波距离 */
+    distance = ultrasound.Filter();                 /* 获得滤波器输出值（毫米） */
+    
+    /* 获取当前速度（整数） */
+    int velocity_int = (int)current_velocity;
+    
+    /* 发送数据: $<velocity>,<voltage>,<distance>$ */
+    Serial.print("$");
+    Serial.print(velocity_int);
+    Serial.print(",");
+    Serial.print(voltage_send);
+    Serial.print(",");
+    Serial.print(distance);
+    Serial.print("$");
+    
+    previousSendTime_ms = currentTime_ms;
+  }
+}
  
  /**
   * @brief 设置RGB灯的颜色

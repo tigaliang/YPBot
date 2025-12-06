@@ -527,24 +527,25 @@ class BluetoothManager(private val context: Context) {
     }
 
     /**
-     * 解析接收到的数据格式: $<velocity>,<voltage>$
+     * 解析接收到的数据格式: $<velocity>,<voltage>,<distance>$ 或 $<velocity>,<voltage>$
      */
     private fun parseAndUpdateStatus(data: String) {
         try {
             // 移除所有空白字符
             val trimmed = data.trim()
             
-            // 检查格式: $<velocity>,<voltage>$
+            // 检查格式: $<velocity>,<voltage>,<distance>$ 或 $<velocity>,<voltage>$
             if (trimmed.startsWith("$") && trimmed.endsWith("$")) {
                 val content = trimmed.substring(1, trimmed.length - 1)
                 val parts = content.split(",")
                 
-                if (parts.size == 2) {
+                if (parts.size >= 2) {
                     val velocity = parts[0].toIntOrNull() ?: 0
                     val voltage = parts[1].toIntOrNull() ?: 0
+                    val distance = if (parts.size >= 3) parts[2].toIntOrNull() ?: 0 else 0
                     
-                    _carStatus.value = CarStatus(velocity = velocity, voltage = voltage)
-                    Log.d("BluetoothManager", "收到状态: velocity=$velocity, voltage=$voltage")
+                    _carStatus.value = CarStatus(velocity = velocity, voltage = voltage, distance = distance)
+                    Log.d("BluetoothManager", "收到状态: velocity=$velocity, voltage=$voltage, distance=$distance")
                 }
             }
         } catch (e: Exception) {

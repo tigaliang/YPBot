@@ -60,6 +60,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -71,6 +72,7 @@ import me.ypphy.ypbot.ui.theme.CardBackground
 import me.ypphy.ypbot.ui.theme.PrimaryBlue
 import me.ypphy.ypbot.ui.theme.TextPrimary
 import me.ypphy.ypbot.ui.theme.TextSecondary
+import me.ypphy.ypbot.ui.theme.YPBotTheme
 import me.ypphy.ypbot.ui.viewmodel.CarControlViewModel
 import me.ypphy.ypbot.ui.components.VelocityTimeChartCard
 
@@ -129,6 +131,7 @@ fun CarControlScreen(
                     connectionStatus = viewModel.connectionStatus,
                     velocity = carStatus.velocity,
                     voltage = carStatus.voltage,
+                    distance = carStatus.distance,
                     onConnectClick = { viewModel.showDeviceSelectionDialog() },
                     onDisconnectClick = { viewModel.disconnect() }
                 )
@@ -200,6 +203,7 @@ private fun BluetoothConnectionCard(
     connectionStatus: String,
     velocity: Int,
     voltage: Int,
+    distance: Int,
     onConnectClick: () -> Unit,
     onDisconnectClick: () -> Unit
 ) {
@@ -262,7 +266,7 @@ private fun BluetoothConnectionCard(
                 ) {
                     // 速度显示
                     Column(
-                        horizontalAlignment = Alignment.Start
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "速度",
@@ -281,9 +285,36 @@ private fun BluetoothConnectionCard(
                         }
                     }
 
+                    // 距离显示
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = "距离",
+                            fontSize = 12.sp,
+                            color = TextSecondary
+                        )
+                        Row(
+                            verticalAlignment = Alignment.Bottom
+                        ) {
+                            Text(
+                                text = "$distance",
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = AccentRed
+                            )
+                            Text(
+                                text = "mm",
+                                fontSize = 14.sp,
+                                color = TextSecondary,
+                                modifier = Modifier.padding(bottom = 2.dp)
+                            )
+                        }
+                    }
+
                     // 电压显示
                     Column(
-                        horizontalAlignment = Alignment.End
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
                             text = "电压",
@@ -310,6 +341,38 @@ private fun BluetoothConnectionCard(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, name = "未连接状态")
+@Composable
+private fun BluetoothConnectionCardPreviewDisconnected() {
+    YPBotTheme {
+        BluetoothConnectionCard(
+            isConnected = false,
+            connectionStatus = "未连接",
+            velocity = 0,
+            voltage = 0,
+            distance = 0,
+            onConnectClick = {},
+            onDisconnectClick = {}
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "已连接状态")
+@Composable
+private fun BluetoothConnectionCardPreviewConnected() {
+    YPBotTheme {
+        BluetoothConnectionCard(
+            isConnected = true,
+            connectionStatus = "已连接: YPBot",
+            velocity = 50,
+            voltage = 7500,
+            distance = 250,
+            onConnectClick = {},
+            onDisconnectClick = {}
+        )
     }
 }
 
