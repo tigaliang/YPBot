@@ -44,6 +44,14 @@ YPBot-app/
 └── gradle.properties             # Gradle properties
 ```
 
+### Debugging
+
+Everytime you make changes to the Android App, you should run the following commands to build and install the app on your device under the `YPBot-app/` directory:
+
+```
+./gradlew build && adb install -r app/build/outputs/apk/debug/app-debug.apk
+```
+
 ## Arduino Firmware
 
 **Location**: `YPBot-miniAuto/app_control/`
