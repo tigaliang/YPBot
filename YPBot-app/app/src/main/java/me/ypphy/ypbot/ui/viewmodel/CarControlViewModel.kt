@@ -60,7 +60,7 @@ class CarControlViewModel(
 
     // 速度-时间数据记录
     data class VelocityDataPoint(val time: Long, val velocity: Int)
-    private val _velocityHistory = MutableStateFlow<List<VelocityDataPoint>>(emptyList())
+    private val _velocityHistory = MutableStateFlow<List<VelocityDataPoint>>(listOf(VelocityDataPoint(0, 100), VelocityDataPoint(1000, 100), VelocityDataPoint(2000, 100), VelocityDataPoint(3000, 100), VelocityDataPoint(4000, 100), VelocityDataPoint(5000, 100), VelocityDataPoint(6000, 100), VelocityDataPoint(7000, 100), VelocityDataPoint(8000, 100), VelocityDataPoint(9000, 100), VelocityDataPoint(10000, 100)))
     val velocityHistory = _velocityHistory.asStateFlow()
     
     private var startTime: Long? = null
